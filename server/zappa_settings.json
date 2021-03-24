@@ -1,10 +1,11 @@
 {
-    "dev": {
+    "prod": {
         "app_function": "server.app",
         "profile_name": "default",
         "project_name": "rec_me",
         "runtime": "python3.7",
         "s3_bucket": "zappa-ji182zvoy",
+        "cors": true,
         "aws_region":"us-west-2"
     }
 }
