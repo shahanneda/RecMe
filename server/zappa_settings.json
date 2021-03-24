@@ -1,0 +1,9 @@
+{
+    "dev": {
+        "app_function": "server.app",
+        "profile_name": "default",
+        "project_name": "rec_me",
+        "runtime": "python3.7",
+        "s3_bucket": "zappa-ji182zvoy"
+    }
+}
