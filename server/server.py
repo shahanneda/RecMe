@@ -41,7 +41,6 @@ def create_user():
     incomplete: a required filed is not given
 
     """
-    sessionID = uuid.uuid1()
     user = request.get_json(force=True)
     
     if not all(param in user for param in ("username", "email", "password")):
@@ -60,9 +59,10 @@ def create_user():
             "reason": "duplicate"
         })
 
-    passHash = bcrypt.generate_password_hash(user['password'])
+    passHash = bcrypt.generate_password_hash(user['password'].encode('utf-8')).decode("utf-8")
 
 
+    sessionID = uuid.uuid1()
     usersTable.put_item(
     Item={
             "userID":user['username'],
@@ -83,5 +83,68 @@ def create_user():
     })
 
     
+@app.route('/api/login', methods=['post'])
+def login():
+    """
+    POST for logging in,
+    Request body:
+    userID: the userID for logging in, (will be original username at time of accoutn creation)
+    password
+
+    will return status:success, and session id,
+    or status:fail, with reason "incomplete" or "invalid"
+    """
+
+    user = request.get_json(force=True)
+
+    if not all(param in user for param in ("userID", "password")):
+        return jsonify({
+            "status": "fail",
+            "reason": "incomplete"
+        })
+
+    # get user from database
+    usersInTable = usersTable.query(
+        KeyConditionExpression=Key('userID').eq(user['userID'])
+    )
+    # check if user doenst exist
+    if usersInTable['Count'] == 0:
+        return jsonify({
+            "status": "fail",
+            "reason": "unknown"
+        })
+    dbUser = usersInTable['Items'][0]
+
+    if bcrypt.check_password_hash(dbUser['password'], user['password'].encode("utf-8")):
+        sessionID = uuid.uuid1()
+        oldSession = dbUser['sessions']
+        oldSession.append(
+                {
+                    "id": str(sessionID),
+                    "timeCreated": round(Decimal(time.time()), 3),
+                }
+        )
+
+        usersTable.update_item(
+            Key={
+                'userID': user['userID'],
+            },
+            UpdateExpression='SET sessions = :val1',
+            ExpressionAttributeValues={
+                ':val1': oldSession
+            }
+        )
+        return jsonify({
+            "status": "success",
+            "sessionID":  sessionID,
+        })
+    #incorrect password
+    else: 
+        return jsonify({
+            "status": "fail",
+            "reason": "invalid"
+        })
+
+
 
 
