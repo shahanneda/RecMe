@@ -30,6 +30,7 @@ def info_page():
 def require_valid_session(func):
     """
     middleware that checks if valid sessions for userId
+    will call the next function with a dbUser object, so extra database requests are not needed
     """
     @wraps(func)
     def check_token(*args, **kwargs):
@@ -62,7 +63,7 @@ def require_valid_session(func):
                 "reason":"invalid_session"
             })
 
-        return func(*args, **kwargs)
+        return func(dbUser, *args, **kwargs)
 
     return check_token
 
@@ -70,8 +71,7 @@ def require_valid_session(func):
 
 @app.route('/api/protected_test/', methods=["get"])
 @require_valid_session
-def protected_test():
-    print("running this?")
+def protected_test(dbUser):
     return jsonify({
         "status":"success",
         "note":"You are logged in!"
