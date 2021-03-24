@@ -4,6 +4,7 @@
         "profile_name": "default",
         "project_name": "rec_me",
         "runtime": "python3.7",
-        "s3_bucket": "zappa-ji182zvoy"
+        "s3_bucket": "zappa-ji182zvoy",
+        "aws_region":"us-west-2"
     }
 }
