@@ -9,6 +9,8 @@ import uuid
 import time
 import os
 from decimal import Decimal
+from functools import wraps
+
 
 app = Flask(__name__)
 bcrypt = Bcrypt(app)
@@ -22,8 +24,58 @@ usersTable = dynamodb.Table('rec_me_users')
 
 
 @app.route('/')
-def hello_world():
+def info_page():
     return '<h1> RecMe Internal API Updated</h1><p>Please contact Shahan Neda for more info </p><a href="https://shahan.ca"/>Shahan.ca</a>'
+
+def require_valid_session(func):
+    """
+    middleware that checks if valid sessions for userId
+    """
+    @wraps(func)
+    def check_token(*args, **kwargs):
+        reqParams = request.get_json(force=True)
+        # get user from database
+        usersInTable = usersTable.query(
+            KeyConditionExpression=Key('userID').eq(reqParams['userID'])
+        )
+        # check if user doenst exist
+        if usersInTable['Count'] == 0:
+            return jsonify({
+                "status": "fail",
+                "reason": "not_found"
+            })
+        if "sessionID" not in request.headers:
+            return jsonify({
+                "status": "fail",
+                "reason": "invalid_session",
+                "note": "please include a sessionID header with your reqeust"
+            })
+        dbUser = usersInTable['Items'][0]
+
+        #TODO: Invalidate old sessions
+
+        # go through all of this users sessions and see if any of them matches 
+        validSession = [session for session in dbUser["sessions"] if session["id"] == request.headers["sessionID"]]
+        if not validSession:
+            return jsonify({
+                "status":"fail",
+                "reason":"invalid_session"
+            })
+
+        return func(*args, **kwargs)
+
+    return check_token
+
+
+
+@app.route('/api/protected_test/', methods=["get"])
+@require_valid_session
+def protected_test():
+    print("running this?")
+    return jsonify({
+        "status":"success",
+        "note":"You are logged in!"
+        })
 
 @app.route('/api/create_user/', methods=['post'])
 def create_user():
@@ -83,7 +135,7 @@ def create_user():
     })
 
     
-@app.route('/api/login', methods=['post'])
+@app.route('/api/login/', methods=['post'])
 def login():
     """
     POST for logging in,
