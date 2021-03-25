@@ -66,10 +66,10 @@ const App: React.FC = () => {
     <View style={styles.container}>
       <Router>
 
-        <View style={styles.header}>
-          <Link to="/">Link</Link>
+        {/* <View style={styles.header}>
+          <Link to="/">Home</Link>
           <Link to="/login">Login</Link>
-        </View>
+        </View> */}
 
 
         <Route exact path="/" component={Home} />
