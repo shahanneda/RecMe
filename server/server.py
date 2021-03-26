@@ -38,6 +38,11 @@ def require_valid_session(func):
     @wraps(func)
     def check_token(*args, **kwargs):
         reqParams = request.get_json(force=True)
+        if "userID" not in reqParams:
+            return jsonify({
+                "status": "fail",
+                "reason": "incomplete"
+            })
         # get user from database
         usersInTable = usersTable.query(
             KeyConditionExpression=Key('userID').eq(reqParams['userID'])
@@ -136,25 +141,37 @@ def create_user():
     })
 
     
-@app.route('/api/logout/', methods=['get'])
+@app.route('/api/logout/', methods=['post'])
 @require_valid_session
 def logout(dbUser):
-        sessionID = request.headers["sessionID"]
-        oldSessions = dbUser['sessions']
-        del oldSessions[str(sessionID)]
+    """
+    POST for logging out user,
+    requires valid sessionID header, and userID in request body
 
-        usersTable.update_item(
-            Key={
-                'userID': dbUser['userID'],
-            },
-            UpdateExpression='SET sessions = :val1',
-            ExpressionAttributeValues={
-                ':val1': oldSessions
-            }
-        )
+    return "status":"success"
+
+    """
+    if not all(param in user for param in ("userID")):
         return jsonify({
-            "status": "success",
+            "status": "fail",
+            "reason": "incomplete"
         })
+    sessionID = request.headers["sessionID"]
+    oldSessions = dbUser['sessions']
+    del oldSessions[str(sessionID)]
+
+    usersTable.update_item(
+        Key={
+            'userID': dbUser['userID'],
+        },
+        UpdateExpression='SET sessions = :val1',
+        ExpressionAttributeValues={
+            ':val1': oldSessions
+        }
+    )
+    return jsonify({
+        "status": "success",
+    })
 
 
 @app.route('/api/login/', methods=['post'])
