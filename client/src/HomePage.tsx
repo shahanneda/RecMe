@@ -1,16 +1,21 @@
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { StyleSheet, View } from 'react-native'
 import { ThemeProvider, Button, Header, Text, withTheme, useTheme } from 'react-native-elements'
 import Login, { LoginInfo } from './Login';
+import { ServerInfo, ServerInfoContext } from './ServerInfo';
+import { logoutToServer } from './ServerRequests';
 
 interface HomeProps {
     setLoginInfo: (info: LoginInfo) => void,
     loginInfo: LoginInfo,
 }
 
+
 const HomePage = (props: HomeProps) => {
     const { theme } = useTheme();
     const [loginShowing, setLoginShowing] = useState(false);
+
+    const serverInfo: ServerInfo =  useContext<ServerInfo>(ServerInfoContext);
     return (
         <View>
             <Header containerStyle={{
@@ -48,6 +53,10 @@ const HomePage = (props: HomeProps) => {
                     <Button
                         title="Log Out"
                         onPress={() => {
+                            logoutToServer({
+                                serverInfo:serverInfo,
+                                loginInfo: props.loginInfo,
+                            })
                             props.setLoginInfo({ loggedIn: false })
                         }}
                         buttonStyle={{

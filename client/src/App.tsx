@@ -34,7 +34,8 @@ const App: React.FC = () => {
   return (
     <View >
       <SafeAreaProvider>
-        <ServerInfoContext.Provider value={ {apiURL: "https://u2wci1la6h.execute-api.us-west-2.amazonaws.com/prod/api/"} }>
+        {/* <ServerInfoContext.Provider value={ {apiURL: "https://u2wci1la6h.execute-api.us-west-2.amazonaws.com/prod/api"} }> */}
+        <ServerInfoContext.Provider value={ {apiURL: "http://127.0.0.1:5000/api"} }>
           <ThemeProvider theme={theme}>
 
             <Router>
