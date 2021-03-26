@@ -1,5 +1,5 @@
 from flask import Flask, jsonify, request
-from flask_cors import CORS
+from flask_cors import CORS, cross_origin
 from flask_bcrypt import Bcrypt
 
 import boto3
@@ -17,10 +17,13 @@ bcrypt = Bcrypt(app)
 
 app.config["DEBUG"] = True
 CORS(app)
+app.config['CORS_HEADERS'] = 'Content-Type'
+
 
 os.environ['AWS_DEFAULT_REGION'] = 'us-west-2'
 dynamodb = boto3.resource('dynamodb')
 usersTable = dynamodb.Table('rec_me_users')
+
 
 
 @app.route('/')
@@ -56,8 +59,7 @@ def require_valid_session(func):
         #TODO: Invalidate old sessions
 
         # go through all of this users sessions and see if any of them matches 
-        validSession = [session for session in dbUser["sessions"] if session["id"] == request.headers["sessionID"]]
-        if not validSession:
+        if request.headers["sessionID"] not in dbUser["sessions"]:
             return jsonify({
                 "status":"fail",
                 "reason":"invalid_session"
@@ -121,12 +123,11 @@ def create_user():
             'displayName': user['username'],
             "email": user['email'],
             "password": passHash,
-            "sessions": [
-                {
-                    "id": str(sessionID),
+            "sessions": {
+                str(sessionID) : {
                     "timeCreated": round(Decimal(time.time()), 3),
                 }
-            ]
+            }
         }
     )
     return jsonify({
@@ -135,7 +136,29 @@ def create_user():
     })
 
     
+@app.route('/api/logout/', methods=['get'])
+@require_valid_session
+def logout(dbUser):
+        sessionID = request.headers["sessionID"]
+        oldSessions = dbUser['sessions']
+        del oldSessions[str(sessionID)]
+
+        usersTable.update_item(
+            Key={
+                'userID': dbUser['userID'],
+            },
+            UpdateExpression='SET sessions = :val1',
+            ExpressionAttributeValues={
+                ':val1': oldSessions
+            }
+        )
+        return jsonify({
+            "status": "success",
+        })
+
+
 @app.route('/api/login/', methods=['post'])
+@cross_origin()
 def login():
     """
     POST for logging in,
@@ -143,7 +166,7 @@ def login():
     userID: the userID for logging in, (will be original username at time of accoutn creation)
     password
 
-    will return status:success, and sessionID
+    will return status:success, and username, email, displayName, and sessionID
     or status:fail, with reason "incomplete" or "invalid"
     """
 
@@ -167,15 +190,10 @@ def login():
         })
     dbUser = usersInTable['Items'][0]
 
-    if bcrypt.check_password_hash(dbUser['password'], user['password'].encode("utf-8")):
+    if bcrypt.check_password_hash(dbUser['password'], str(user['password']).encode("utf-8")):
         sessionID = uuid.uuid1()
-        oldSession = dbUser['sessions']
-        oldSession.append(
-                {
-                    "id": str(sessionID),
-                    "timeCreated": round(Decimal(time.time()), 3),
-                }
-        )
+        oldSessions = dbUser['sessions']
+        oldSessions[str(sessionID)] = {"timeCreated": round(Decimal(time.time()), 3)}
 
         usersTable.update_item(
             Key={
@@ -183,7 +201,7 @@ def login():
             },
             UpdateExpression='SET sessions = :val1',
             ExpressionAttributeValues={
-                ':val1': oldSession
+                ':val1': oldSessions
             }
         )
         return jsonify({
