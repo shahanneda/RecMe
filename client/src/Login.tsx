@@ -12,22 +12,27 @@ const Login = (props: LoginProps) => {
     return (
         <View style={styles.container}>
             <Text>
+                <View style={styles.errorView}>
+                    <Text style={styles.errorText}>
+                        Invalid Password/Username!
+                    </Text>
+                </View>
                 <View style={styles.inputView}>
                     <TextInput
                         style={styles.TextInput}
-                        placeholder="Email."
+                        placeholder="username"
                         placeholderTextColor={RColors.text}
-                        onChangeText={(email) => {}}
+                        onChangeText={(username) => { }}
                     />
                 </View>
 
                 <View style={styles.inputView}>
                     <TextInput
                         style={styles.TextInput}
-                        placeholder="Password."
+                        placeholder="Password"
                         placeholderTextColor={RColors.text}
                         secureTextEntry={true}
-                        onChangeText={(password) => {}}
+                        onChangeText={(password) => { }}
                     />
                 </View>
 
@@ -71,7 +76,7 @@ const styles = StyleSheet.create({
         height: 50,
         flex: 1,
         padding: 10,
-        textAlign:"center",
+        textAlign: "center",
         color: RColors.text,
     },
 
@@ -90,7 +95,27 @@ const styles = StyleSheet.create({
         backgroundColor: RColors.accent,
     },
     loginText: {
-        color:RColors.text,
+        color: RColors.text,
+    },
+    errorText: {
+        textAlign: "center",
+        fontSize: 50,
+        color: "red",
+    },
+    errorView:{
+        margin: "15",
+        padding: "200",
+        backgroundColor: RColors.background2,
+        borderStyle: 'solid',
+        borderWidth:1,
+        borderRadius:2,
+        borderColor: "gray",
+
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.8,
+        shadowRadius: 2,  
+        elevation: 5
     }
 
 })
