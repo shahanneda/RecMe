@@ -1,18 +1,30 @@
 
-import React from 'react'
+import React, { useContext, useState } from 'react'
 import { GestureResponderEvent, StatusBar, StyleSheet, View } from 'react-native'
 import { RColors } from './RColors'
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 import { Button, Input, Text } from 'react-native-elements';
 import { Overlay } from 'react-native-elements/dist/overlay/Overlay';
+import { ServerInfo, ServerInfoContext } from './ServerInfo';
 
 
 interface LoginProps {
     onClose: () => void,
     setLoginInfo: (info: LoginInfo) => void,
 }
-const Login = (props: LoginProps) => {
+
+
+
+const Login:React.FC<LoginProps> = (props: LoginProps) => {
+    const serverInfo: ServerInfo =  useContext<ServerInfo>(ServerInfoContext);
+
+    const loginToServer = (username: string, password:string):void => { 
+
+    }
+
+    const [usernameError, setUsernameError] = useState(false);
+    const [passwordError, setPasswordError] = useState(false);
 
      const loginButtonPress = (e:GestureResponderEvent) => {
 
@@ -39,6 +51,8 @@ const Login = (props: LoginProps) => {
                     Login
             </Text>
                 <Input
+                errorMessage={'invalid password'}
+                    
                     placeholder='username'
                 />
                 <Input

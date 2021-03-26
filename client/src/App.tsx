@@ -7,6 +7,7 @@ import Login, { LoginInfo } from './Login';
 import HomePage from './HomePage';
 import { Button, Text, Header, ThemeProvider, colors } from 'react-native-elements';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { ServerInfoContext } from './ServerInfo';
 
 
 
@@ -24,7 +25,7 @@ const theme = {
 
 
 const App: React.FC = () => {
-  const [loginInfo, setLoginInfo] = useState<LoginInfo>({loggedIn: false});
+  const [loginInfo, setLoginInfo] = useState<LoginInfo>({ loggedIn: false });
 
   useEffect(() => {
     setLoginInfo({ loggedIn: false })
@@ -33,21 +34,23 @@ const App: React.FC = () => {
   return (
     <View >
       <SafeAreaProvider>
-        <ThemeProvider theme={theme}>
+        <ServerInfoContext.Provider value={ {apiURL: "https://u2wci1la6h.execute-api.us-west-2.amazonaws.com/prod/api/"} }>
+          <ThemeProvider theme={theme}>
 
-          <Router>
-            {/* <View style={styles.header}>
+            <Router>
+              {/* <View style={styles.header}>
           <Link to="/">Home</Link>
           <Link to="/login">Login</Link>
         </View> */}
 
-            <Route exact path="/">
-              <HomePage setLoginInfo={setLoginInfo} loginInfo={loginInfo}/>
-            </Route>
+              <Route exact path="/">
+                <HomePage setLoginInfo={setLoginInfo} loginInfo={loginInfo} />
+              </Route>
 
-            {/* <Route path="/login" component={Login} /> */}
-          </Router>
-        </ThemeProvider>
+              {/* <Route path="/login" component={Login} /> */}
+            </Router>
+          </ThemeProvider>
+        </ServerInfoContext.Provider>
       </SafeAreaProvider>
     </View >
   );
