@@ -19,16 +19,15 @@ const theme = {
   colors: {
     secondary: "#FF9F1C",
   },
-
 };
 
 
 const App: React.FC = () => {
-  const [loginInfo, setLoginInfo] = useState<LoginInfo>();
+  const [loginInfo, setLoginInfo] = useState<LoginInfo>({loggedIn: false});
 
   useEffect(() => {
     setLoginInfo({ loggedIn: false })
-  })
+  }, []);
 
   return (
     <View >
@@ -42,7 +41,7 @@ const App: React.FC = () => {
         </View> */}
 
             <Route exact path="/">
-              <HomePage setLoginInfo={setLoginInfo} />
+              <HomePage setLoginInfo={setLoginInfo} loginInfo={loginInfo}/>
             </Route>
 
             {/* <Route path="/login" component={Login} /> */}

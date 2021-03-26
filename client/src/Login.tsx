@@ -15,6 +15,8 @@ interface LoginProps {
 const Login = (props: LoginProps) => {
 
      const loginButtonPress = (e:GestureResponderEvent) => {
+
+         //TEMP
          props.setLoginInfo({
              loggedIn: true,
              displayName: "shahaenda",
@@ -22,6 +24,7 @@ const Login = (props: LoginProps) => {
              email: "e@example.com",
              sessionID:"123temp123",
          });
+         props.onClose();
 
      } 
 
