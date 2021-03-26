@@ -143,7 +143,7 @@ def login():
     userID: the userID for logging in, (will be original username at time of accoutn creation)
     password
 
-    will return status:success, and session id,
+    will return status:success, and sessionID
     or status:fail, with reason "incomplete" or "invalid"
     """
 
