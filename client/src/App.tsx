@@ -63,18 +63,24 @@ const App: React.FC = () => {
   const [count, setCount] = useState(0);
 
   return (
-    <View style={styles.container}>
-      <Router>
+    <View >
+      <SafeAreaProvider>
+        <ThemeProvider theme={theme}>
 
+      <Router>
         {/* <View style={styles.header}>
           <Link to="/">Home</Link>
           <Link to="/login">Login</Link>
         </View> */}
 
+            <Route exact path="/">
+              <HomePage setLoginInfo={setLoginInfo} />
+            </Route>
 
-        <Route exact path="/" component={Home} />
-        <Route path="/login" component={Login} />
+            {/* <Route path="/login" component={Login} /> */}
       </Router>
+        </ThemeProvider>
+      </SafeAreaProvider>
     </View >
   );
 }
