@@ -27,6 +27,7 @@ usersTable = dynamodb.Table('rec_me_users')
 
 
 @app.route('/')
+@cross_origin()
 def info_page():
     return '<h1> RecMe Internal API Updated</h1><p>Please contact Shahan Neda for more info </p><a href="https://shahan.ca"/>Shahan.ca</a>'
 
@@ -38,6 +39,7 @@ def require_valid_session(func):
     @wraps(func)
     def check_token(*args, **kwargs):
         reqParams = request.get_json(force=True)
+        print(request.json)
         if "userID" not in reqParams:
             return jsonify({
                 "status": "fail",
@@ -77,6 +79,7 @@ def require_valid_session(func):
 
 
 @app.route('/api/protected_test/', methods=["get"])
+@cross_origin()
 @require_valid_session
 def protected_test(dbUser):
     return jsonify({
@@ -85,6 +88,7 @@ def protected_test(dbUser):
         })
 
 @app.route('/api/create_user/', methods=['post'])
+@cross_origin()
 def create_user():
     """
     POST: Creates new user
@@ -142,6 +146,7 @@ def create_user():
 
     
 @app.route('/api/logout/', methods=['post'])
+@cross_origin()
 @require_valid_session
 def logout(dbUser):
     """
@@ -151,11 +156,6 @@ def logout(dbUser):
     return "status":"success"
 
     """
-    if not all(param in user for param in ("userID")):
-        return jsonify({
-            "status": "fail",
-            "reason": "incomplete"
-        })
     sessionID = request.headers["sessionID"]
     oldSessions = dbUser['sessions']
     del oldSessions[str(sessionID)]
@@ -223,6 +223,9 @@ def login():
         )
         return jsonify({
             "status": "success",
+            "username": dbUser["userID"],
+            "displayName": dbUser["displayName"],
+            "email": dbUser["email"],
             "sessionID":  sessionID,
         })
     #incorrect password

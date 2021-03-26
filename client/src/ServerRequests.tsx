@@ -21,7 +21,8 @@ export const logoutToServer = (props: ServerLogoutProps): void => {
         body: JSON.stringify({
             "userID": props.loginInfo.username,
         }),
-    }).then((res) => {if(props.callback) props?.callback()})
+
+    }).then((res) => {console.log(res);if(props.callback) props?.callback()})
 }
 
 
@@ -53,6 +54,7 @@ export const loginToServer = (props: ServerLoginProps): void => {
             if (res.status != "success") {
                 props.setShouldShowUsernameError(true);
             } else {
+                console.log(res);
                 props.setLoginInfo({
                     loggedIn: true,
                     displayName: res.displayName,
