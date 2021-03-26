@@ -17,9 +17,23 @@ const HomePage = (props: HomeProps) => {
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-            }}>
-                <View>
-                    {!props.loginInfo.loggedIn ? <Button
+
+            }}
+            rightContainerStyle={{
+                justifyContent:"center",
+            }}
+            >
+                <></>
+
+                
+                <Text h1 h1Style={{
+                    color: "white",
+                    fontStyle: "italic",
+                }}>
+                    RecMe
+                </Text>
+{!props.loginInfo.loggedIn ?
+                    <Button
                         buttonStyle={{
                             backgroundColor: theme?.colors?.secondary,
                             justifyContent: 'center',
@@ -30,30 +44,31 @@ const HomePage = (props: HomeProps) => {
                         onPress={() => {
                             setLoginShowing(true)
                         }}
-                    /> : <Button title="Log Out" onPress={() => {
-                        props.setLoginInfo({ loggedIn: false })
-                    }} />}
-                </View>
-
-                <Text h1 h1Style={{
-                    color: "white",
-                    fontStyle: "italic",
-                }}>
-                    RecMe
-                </Text>
+                    /> :
+                    <Button
+                        title="Log Out"
+                        onPress={() => {
+                            props.setLoginInfo({ loggedIn: false })
+                        }}
+                        buttonStyle={{
+                            backgroundColor: "red",
+                            justifyContent: 'center',
+                            borderRadius: 1,
+                        }}
+                    />}
             </Header>
 
 
 
             {loginShowing ? <Login onClose={() => { setLoginShowing(false) }} setLoginInfo={props.setLoginInfo} /> : null}
 
-            {props.loginInfo.loggedIn ?<View>
-            <Text>
-                Welcome {props.loginInfo.username}
+            {props.loginInfo.loggedIn ? <View>
+                <Text>
+                    Welcome {props.loginInfo.username}
                 Logged in!
                 sessionID: {props.loginInfo.sessionID}
-            </Text> 
-            </View>: null
+                </Text>
+            </View> : null
             }
 
         </View>

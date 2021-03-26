@@ -18,6 +18,7 @@ const styles = StyleSheet.create({
 const theme = {
   colors: {
     secondary: "#FF9F1C",
+    danger: "red",
   },
 };
 
