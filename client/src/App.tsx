@@ -1,74 +1,42 @@
 import { react } from '@babel/types';
-import React, { useState } from 'react';
-import { Button, Text, View, StyleSheet, ViewStyle, TextStyle } from 'react-native';
-import { Colors } from 'react-native/Libraries/NewAppScreen';
-// import { NativeRouter, Route, Link } from "react-router-native";
-import {Router, Switch, Route, Link} from "./Router/index";
+import React, { useEffect, useState } from 'react';
+import { View, StyleSheet, ViewStyle, TextStyle } from 'react-native';
+import { Router, Switch, Route, Link } from "./Router/index";
 
-import Login from './Login';
-
-
-
-
-interface Styles {
-  container: ViewStyle,
-  loginButton: ViewStyle,
-  logo: TextStyle,
-  header: TextStyle,
-  buttonOutside: ViewStyle,
-  buttonInside: TextStyle,
-}
-
-const styles = StyleSheet.create<Styles>({
-  container: {
-    backgroundColor: '#e0fffe',
-    width: "100vw",
-    height: "100vh",
-  },
-  loginButton: {
-    padding: "5px",
-    width:"50%",
-    backgroundColor:"#ebf8ff",
-    borderWidth:1,
-    borderStyle:"solid",
-    borderColor:"cyan",
-    flex:1,
-  },
-  logo: {
-
-  },
-  header: {
-    display: "flex",
-    flexDirection:"row",
-    padding: "10px",
-    backgroundColor: "#8fdaff",
-    width: "100%",
-    height: "10%",
-    top: "0",
-    left: "0",
-  },
-  buttonOutside:{
+import Login, { LoginInfo } from './Login';
+import HomePage from './HomePage';
+import { Button, Text, Header, ThemeProvider, colors } from 'react-native-elements';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 
-  },
 
-  buttonInside:{
-    textAlign:"center",
-    margin:"auto",
-  }
+const styles = StyleSheet.create({
+
 
 });
 
+const theme = {
+  colors: {
+    secondary: "#FF9F1C",
+  },
+
+};
+
+
 const App: React.FC = () => {
-  const [count, setCount] = useState(0);
+  const [loginInfo, setLoginInfo] = useState<LoginInfo>();
+
+  useEffect(() => {
+    setLoginInfo({ loggedIn: false })
+  })
 
   return (
     <View >
       <SafeAreaProvider>
         <ThemeProvider theme={theme}>
 
-      <Router>
-        {/* <View style={styles.header}>
+          <Router>
+            {/* <View style={styles.header}>
           <Link to="/">Home</Link>
           <Link to="/login">Login</Link>
         </View> */}
@@ -78,7 +46,7 @@ const App: React.FC = () => {
             </Route>
 
             {/* <Route path="/login" component={Login} /> */}
-      </Router>
+          </Router>
         </ThemeProvider>
       </SafeAreaProvider>
     </View >
@@ -86,7 +54,6 @@ const App: React.FC = () => {
 }
 
 
-const Home = () => <Text style={styles.logo}>Home</Text>;
 
 
 
