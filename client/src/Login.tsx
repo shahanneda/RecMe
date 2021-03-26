@@ -7,6 +7,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import { Button, Input, Text } from 'react-native-elements';
 import { Overlay } from 'react-native-elements/dist/overlay/Overlay';
 import { ServerInfo, ServerInfoContext } from './ServerInfo';
+import { loginToServer } from './ServerRequests';
 
 
 interface LoginProps {
@@ -19,29 +20,27 @@ interface LoginProps {
 const Login:React.FC<LoginProps> = (props: LoginProps) => {
     const serverInfo: ServerInfo =  useContext<ServerInfo>(ServerInfoContext);
 
-    const loginToServer = (username: string, password:string):void => { 
+    const [loading, setLoading] = useState<Boolean>(false);
+    const [shouldShowUsernameError, setShouldShowUsernameError] = useState<Boolean>(false);
+    const [username, setUsername] = useState("");
+    const [password, setPassword] = useState("");
 
-    }
-
-    const [usernameError, setUsernameError] = useState(false);
-    const [passwordError, setPasswordError] = useState(false);
-
-     const loginButtonPress = (e:GestureResponderEvent) => {
-
-         //TEMP
-         props.setLoginInfo({
-             loggedIn: true,
-             displayName: "shahaenda",
-             username:"shahanneda",
-             email: "e@example.com",
-             sessionID:"123temp123",
-         });
-         props.onClose();
-
-     } 
+    const loginButtonPress = (e:GestureResponderEvent) => {
+        loginToServer({
+            onClose:props.onClose,
+            username: username,
+            password: password,
+            serverInfo: serverInfo,
+            setLoading: setLoading,
+            setLoginInfo: props.setLoginInfo,
+            setShouldShowUsernameError: setShouldShowUsernameError,
+        })
+    } 
 
     return (
         <Overlay isVisible={true} onBackdropPress={props.onClose}>
+            {loading?<Text>Loading</Text> : null}
+
             <View style={styles.container}>
                 <Text h1 h1Style={{
                     marginBottom: 20,
@@ -51,14 +50,17 @@ const Login:React.FC<LoginProps> = (props: LoginProps) => {
                     Login
             </Text>
                 <Input
-                errorMessage={'invalid password'}
-                    
+                    errorMessage={shouldShowUsernameError ? "Invalid username or password" : undefined}
                     placeholder='username'
+                    value={username}
+                    onChangeText={setUsername}
                 />
                 <Input
                     placeholder='password'
                     textContentType='password'
                     secureTextEntry={true}
+                    value={password}
+                    onChangeText={setPassword}
                 />
                 <Button title='Login'
                     buttonStyle={{
