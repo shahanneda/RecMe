@@ -27,7 +27,7 @@ export const logoutToServer = (props: ServerLogoutProps): void => {
 
 
 interface ServerLoginProps {
-    username: string,
+    userID: string,
     password: string,
     serverInfo: ServerInfo,
     onClose: () => void,
@@ -35,6 +35,8 @@ interface ServerLoginProps {
     setLoginInfo: (info: LoginInfo) => void,
     setShouldShowUsernameError: (val: Boolean) => void,
 }
+export type {ServerLoginProps}
+
 
 export const loginToServer = (props: ServerLoginProps): void => {
     props.setLoading(true);
@@ -44,13 +46,43 @@ export const loginToServer = (props: ServerLoginProps): void => {
             "Content-Type": "application/json"
         },
         body: JSON.stringify({
-            "userID": props.username,
+            "userID": props.userID,
             "password": props.password,
         }),
     }).then((res) => res.json())
         .then((res) => {
             console.log(res)
+            saveServerResponseToLoginInfo(res, props)
             props.setLoading(false);
+        });
+}
+
+interface ServerCreateAccountProps extends ServerLoginProps { 
+    email: string,
+}
+export type {ServerCreateAccountProps};
+
+export const createAccountOnServer = (props: ServerCreateAccountProps): void => {
+    props.setLoading(true);
+    fetch(props.serverInfo.apiURL + "/create-account/", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            "userID": props.userID,
+            "password": props.password,
+            "email": props.email,
+        }),
+    }).then((res) => res.json())
+        .then((res) => {
+            console.log(res)
+            saveServerResponseToLoginInfo(res, props)
+            props.setLoading(false);
+        });
+}
+
+const saveServerResponseToLoginInfo = (res: any, props:ServerLoginProps ) => {
             if (res.status != "success") {
                 props.setShouldShowUsernameError(true);
             } else {
@@ -65,5 +97,6 @@ export const loginToServer = (props: ServerLoginProps): void => {
                 props.onClose()
             }
 
-        });
+
 }
+

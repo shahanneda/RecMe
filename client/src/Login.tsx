@@ -7,7 +7,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import { Button, Input, Text } from 'react-native-elements';
 import { Overlay } from 'react-native-elements/dist/overlay/Overlay';
 import { ServerInfo, ServerInfoContext } from './ServerInfo';
-import { loginToServer } from './ServerRequests';
+import { createAccountOnServer, loginToServer, ServerCreateAccountProps, ServerLoginProps } from './ServerRequests';
 import { Route } from "./Router"
 import { useHistory } from 'react-router';
 
@@ -24,10 +24,7 @@ const Login: React.FC<LoginProps> = (props: LoginProps) => {
     const history = useHistory();
     return (
         <Overlay isVisible={true} onBackdropPress={props.onClose}>
-
-
             <Route path="/home/ls/join">
-
                 <View style={styles.container}>
                     <View>
                         <Button title='Login'
@@ -81,21 +78,29 @@ const FormPage: React.FC<FormPageProps> = (props: FormPageProps) => {
 
     const history = useHistory();
 
-    const loginButtonPress = (e: GestureResponderEvent) => {
-        loginToServer({
+    const toServerButtonPressed = (e: GestureResponderEvent, isCreateAccount: Boolean) => {
+        const serverRequestInfo = {
             onClose: props.onClose,
-            username: username,
+            userID: username,
             password: password,
+            email: email,
             serverInfo: serverInfo,
             setLoading: setLoading,
             setLoginInfo: props.setLoginInfo,
             setShouldShowUsernameError: setShouldShowUsernameError,
-        })
+        } as ServerCreateAccountProps
+
+        // Both login and create account share the same request info, but login doesnt need email so we upcast that class
+        if (isCreateAccount) {
+            createAccountOnServer(serverRequestInfo)
+        } else {
+            loginToServer(serverRequestInfo as ServerLoginProps)
+        }
+
     }
 
 
     return (
-
         <>
             <View style={styles.container}>
 
@@ -106,25 +111,30 @@ const FormPage: React.FC<FormPageProps> = (props: FormPageProps) => {
                     borderBottomWidth: 1,
                 }}>
                     {props.isCreateAccount ? "Create Account" : "Login"}
-            </Text>
+                </Text>
                 <Input
-                    errorMessage={shouldShowUsernameError ? "Invalid username or password" : undefined}
+                    errorMessage={shouldShowUsernameError ?
+                        (props.isCreateAccount ?
+                             "Username already exists!"  // for creating account
+                            :"Invalid username or password" // for logging in
+                        )
+                        : undefined}
                     placeholder='John Appleseed'
                     value={username}
                     onChangeText={setUsername}
                     label="Username"
                 />
-                {props.isCreateAccount ? 
-                <>
-                <Input
-                    placeholder='me@example.com'
-                    value={email}
-                    textContentType="emailAddress"
-                    onChangeText={setEmail}
-                    label={"Email"}
-                    autoCompleteType="off"
-                />
-                </> : null}
+                {props.isCreateAccount ?
+                    <>
+                        <Input
+                            placeholder='me@example.com'
+                            value={email}
+                            textContentType="emailAddress"
+                            onChangeText={setEmail}
+                            label={"Email"}
+                            autoCompleteType="off"
+                        />
+                    </> : null}
                 <Input
                     textContentType='password'
                     secureTextEntry={true}
@@ -136,21 +146,14 @@ const FormPage: React.FC<FormPageProps> = (props: FormPageProps) => {
                     display: "flex",
                     flexDirection: 'row',
                     width: "80%",
-                    justifyContent:"space-around",
+                    justifyContent: "space-around",
                 }}>
                     <Button title={props.isCreateAccount ? 'Create ' : 'Login'}
                         buttonStyle={{
                             width: "95%",
                             paddingHorizontal: 100,
                         }}
-                        onPress={ (e) => {
-                            if(props.isCreateAccount){
-
-                            }else{
-                                loginButtonPress(e)
-                            }
-                        }
-                        }
+                        onPress={(e) => { toServerButtonPressed(e, props.isCreateAccount) }}
                     />
 
                     <Button title='Back'
