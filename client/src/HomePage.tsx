@@ -80,9 +80,12 @@ const HomePage = (props: HomeProps) => {
 
             {props.loginInfo.loggedIn ? <View>
                 <Text>
-                    Welcome {props.loginInfo.username}
+                Welcome {props.loginInfo.userID}
+                {"\n"}
                 Logged in!
+                {"\n"}
                 sessionID: {props.loginInfo.sessionID}
+
                 </Text>
             </View> : null
             }

@@ -19,7 +19,7 @@ export const logoutToServer = (props: ServerLogoutProps): void => {
         method: "POST",
         headers: requestHeaders,
         body: JSON.stringify({
-            "userID": props.loginInfo.username,
+            "userID": props.loginInfo.userID,
         }),
 
     }).then((res) => {console.log(res);if(props.callback) props?.callback()})
@@ -92,7 +92,7 @@ const saveServerResponseToLoginInfo = (res: any, props:ServerLoginProps ) => {
                     displayName: res.displayName,
                     email: res.email,
                     sessionID: res.sessionID,
-                    username: res.username,
+                    userID: res.userID,
                 })
                 props.onClose()
             }

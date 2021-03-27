@@ -187,7 +187,7 @@ const styles = StyleSheet.create({
 interface LoginInfo {
     loggedIn: boolean,
     sessionID?: string,
-    username?: string,
+    userID?: string,
     displayName?: string,
     email?: string,
 }
