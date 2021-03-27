@@ -52,8 +52,10 @@ const Login: React.FC<LoginProps> = (props: LoginProps) => {
             </Route>
 
             <Route path="/home/ls/login">
-                <FormPage onClose={props.onClose} setLoginInfo={props.setLoginInfo} />
-
+                <FormPage onClose={props.onClose} setLoginInfo={props.setLoginInfo} isCreateAccount={false} />
+            </Route>
+            <Route path="/home/ls/create-account">
+                <FormPage onClose={props.onClose} setLoginInfo={props.setLoginInfo} isCreateAccount={true} />
             </Route>
 
 
@@ -66,7 +68,7 @@ export default Login
 interface FormPageProps {
     onClose: () => void,
     setLoginInfo: (info: LoginInfo) => void,
-
+    isCreateAccount: Boolean,
 }
 const FormPage: React.FC<FormPageProps> = (props: FormPageProps) => {
 
@@ -75,6 +77,7 @@ const FormPage: React.FC<FormPageProps> = (props: FormPageProps) => {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState<Boolean>(false);
+    const [email, setEmail] = useState("");
 
     const history = useHistory();
 
@@ -91,49 +94,78 @@ const FormPage: React.FC<FormPageProps> = (props: FormPageProps) => {
     }
 
 
-    return (<View style={styles.container}>
+    return (
 
-        <Button title='Back'
-            buttonStyle={{
-                width: "100%",
-                paddingHorizontal: 80,
-                marginTop: 10,
-                backgroundColor: RColors.dark,
-            }}
-            onPress={() => { history.push("/home/ls/join") }}
-        />
-        {loading ? <Text>Loading</Text> : null}
-        <Text h1 h1Style={{
-            marginBottom: 20,
-            borderBottomColor: "black",
-            borderBottomWidth: 1,
-        }}>
-            Login
+        <>
+            <View style={styles.container}>
+
+                {loading ? <Text>Loading</Text> : null}
+                <Text h1 h1Style={{
+                    marginBottom: 20,
+                    borderBottomColor: "black",
+                    borderBottomWidth: 1,
+                }}>
+                    {props.isCreateAccount ? "Create Account" : "Login"}
             </Text>
-        <Input
-            errorMessage={shouldShowUsernameError ? "Invalid username or password" : undefined}
-            placeholder='username'
-            value={username}
-            onChangeText={setUsername}
-        />
-        <Input
-            placeholder='password'
-            textContentType='password'
-            secureTextEntry={true}
-            value={password}
-            onChangeText={setPassword}
-        />
-        <View>
-            <Button title='Login'
-                buttonStyle={{
-                    width: "100%",
-                    paddingHorizontal: 100,
-                }}
-                onPress={loginButtonPress}
-            />
+                <Input
+                    errorMessage={shouldShowUsernameError ? "Invalid username or password" : undefined}
+                    placeholder='John Appleseed'
+                    value={username}
+                    onChangeText={setUsername}
+                    label="Username"
+                />
+                {props.isCreateAccount ? 
+                <>
+                <Input
+                    placeholder='me@example.com'
+                    value={email}
+                    textContentType="emailAddress"
+                    onChangeText={setEmail}
+                    label={"Email"}
+                    autoCompleteType="off"
+                />
+                </> : null}
+                <Input
+                    textContentType='password'
+                    secureTextEntry={true}
+                    value={password}
+                    onChangeText={setPassword}
+                    label={"Password"}
+                />
+                <View style={{
+                    display: "flex",
+                    flexDirection: 'row',
+                    width: "80%",
+                    justifyContent:"space-around",
+                }}>
+                    <Button title={props.isCreateAccount ? 'Create ' : 'Login'}
+                        buttonStyle={{
+                            width: "95%",
+                            paddingHorizontal: 100,
+                        }}
+                        onPress={ (e) => {
+                            if(props.isCreateAccount){
 
-        </View>
-    </View >)
+                            }else{
+                                loginButtonPress(e)
+                            }
+                        }
+                        }
+                    />
+
+                    <Button title='Back'
+                        buttonStyle={{
+                            width: "100%",
+                            paddingHorizontal: 40,
+                            // marginTop: 10,
+                            backgroundColor: RColors.dark,
+                        }}
+                        onPress={() => { history.push("/home/ls/join") }}
+                    />
+                </View>
+            </View >
+
+        </>)
 }
 const styles = StyleSheet.create({
     container: {
