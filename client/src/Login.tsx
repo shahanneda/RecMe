@@ -11,6 +11,9 @@ import { createAccountOnServer, loginToServer, ServerCreateAccountProps, ServerL
 import { Route } from "./Router"
 import { useHistory } from 'react-router';
 
+// @ts-ignore
+import cookie from 'cross-cookie';
+
 
 interface LoginProps {
     onClose: () => void,

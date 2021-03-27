@@ -11,6 +11,8 @@ import { ServerInfoContext } from './ServerInfo';
 import { Redirect } from 'react-router';
 
 
+// @ts-ignore
+import cookie from 'cross-cookie';
 
 const styles = StyleSheet.create({
 
@@ -28,8 +30,29 @@ const theme = {
 const App: React.FC = () => {
   const [loginInfo, setLoginInfo] = useState<LoginInfo>({ loggedIn: false });
 
+  const setLoginInfoAndCookie = (info: LoginInfo) => {
+    if(info.loggedIn){
+      cookie.set('loginInfo', info);
+    }else{
+      cookie.remove("loginInfo")
+    }
+
+    setLoginInfo(info);
+  };
+
   useEffect(() => {
-    setLoginInfo({ loggedIn: false })
+
+    cookie.get('loginInfo')
+    .then( (val: string)  => JSON.parse(val))
+    .then((val: LoginInfo) => {
+      console.log(val);
+      if(val){
+        setLoginInfo(val as LoginInfo)
+      }else{
+        setLoginInfo({ loggedIn: false })
+      }
+    });
+
   }, []);
 
   return (
@@ -46,7 +69,7 @@ const App: React.FC = () => {
         </View> */}
 
               <Route  path="/home">
-                <HomePage setLoginInfo={setLoginInfo} loginInfo={loginInfo} />
+                <HomePage setLoginInfo={setLoginInfoAndCookie} loginInfo={loginInfo} />
               </Route>
 
               <Route path="/">
