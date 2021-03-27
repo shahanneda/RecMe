@@ -8,6 +8,7 @@ import HomePage from './HomePage';
 import { Button, Text, Header, ThemeProvider, colors } from 'react-native-elements';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { ServerInfoContext } from './ServerInfo';
+import { Redirect } from 'react-router';
 
 
 
@@ -44,8 +45,12 @@ const App: React.FC = () => {
           <Link to="/login">Login</Link>
         </View> */}
 
-              <Route exact path="/">
+              <Route  path="/home">
                 <HomePage setLoginInfo={setLoginInfo} loginInfo={loginInfo} />
+              </Route>
+
+              <Route path="/">
+                <Redirect to="/home" />
               </Route>
 
               {/* <Route path="/login" component={Login} /> */}

@@ -1,7 +1,9 @@
 import React, { useContext, useState } from 'react'
 import { StyleSheet, View } from 'react-native'
 import { ThemeProvider, Button, Header, Text, withTheme, useTheme } from 'react-native-elements'
+import { useHistory } from 'react-router';
 import Login, { LoginInfo } from './Login';
+import { Route } from './Router';
 import { ServerInfo, ServerInfoContext } from './ServerInfo';
 import { logoutToServer } from './ServerRequests';
 
@@ -14,6 +16,8 @@ interface HomeProps {
 const HomePage = (props: HomeProps) => {
     const { theme } = useTheme();
     const [loginShowing, setLoginShowing] = useState(false);
+    const history = useHistory();
+
 
     const serverInfo: ServerInfo =  useContext<ServerInfo>(ServerInfoContext);
     return (
@@ -47,7 +51,8 @@ const HomePage = (props: HomeProps) => {
                         title="Join"
                         type="solid"
                         onPress={() => {
-                            setLoginShowing(true)
+                            history.push("/home/ls/join")
+                            // setLoginShowing(true)
                         }}
                     /> :
                     <Button
@@ -69,7 +74,9 @@ const HomePage = (props: HomeProps) => {
 
 
 
-            {loginShowing ? <Login onClose={() => { setLoginShowing(false) }} setLoginInfo={props.setLoginInfo} /> : null}
+            <Route path="/home/ls/">
+                <Login onClose={() => { history.push("/home")}} setLoginInfo={props.setLoginInfo} /> 
+            </Route>
 
             {props.loginInfo.loggedIn ? <View>
                 <Text>
