@@ -87,13 +87,13 @@ def protected_test(dbUser):
         "note":"You are logged in!"
         })
 
-@app.route('/api/create_user/', methods=['post'])
+@app.route('/api/create-account/', methods=['post'])
 @cross_origin()
 def create_user():
     """
     POST: Creates new user
     POST Body:
-    username: a unique username
+    userID: a unique userID
     password
     email
 
@@ -106,15 +106,15 @@ def create_user():
     """
     user = request.get_json(force=True)
     
-    if not all(param in user for param in ("username", "email", "password")):
+    if not all(param in user for param in ("userID", "email", "password")):
         return jsonify({
             "status": "fail",
             "reason": "incomplete"
         })
 
-    # check for duplcate username
+    # check for duplcate userID
     userInTable = usersTable.query(
-        KeyConditionExpression=Key('userID').eq(user['username'])
+        KeyConditionExpression=Key('userID').eq(user['userID'])
     )
     if userInTable['Count'] != 0:
         return jsonify({
@@ -128,8 +128,8 @@ def create_user():
     sessionID = uuid.uuid1()
     usersTable.put_item(
     Item={
-            "userID":user['username'],
-            'displayName': user['username'],
+            "userID":user['userID'],
+            'displayName': user['userID'],
             "email": user['email'],
             "password": passHash,
             "sessions": {
@@ -139,8 +139,12 @@ def create_user():
             }
         }
     )
+
     return jsonify({
         "status": "success",
+        "userID": user["userID"],
+        "displayName": user["userID"],
+        "email": user["email"],
         "sessionID":  sessionID,
     })
 
@@ -180,10 +184,10 @@ def login():
     """
     POST for logging in,
     Request body:
-    userID: the userID for logging in, (will be original username at time of accoutn creation)
+    userID: the userID for logging in, (will be original userID at time of accoutn creation)
     password
 
-    will return status:success, and username, email, displayName, and sessionID
+    will return status:success, and userID, email, displayName, and sessionID
     or status:fail, with reason "incomplete" or "invalid"
     """
 
@@ -223,7 +227,7 @@ def login():
         )
         return jsonify({
             "status": "success",
-            "username": dbUser["userID"],
+            "userID": dbUser["userID"],
             "displayName": dbUser["displayName"],
             "email": dbUser["email"],
             "sessionID":  sessionID,
