@@ -26,6 +26,7 @@ usersTable = dynamodb.Table('rec_me_users')
 
 
 
+
 @app.route('/')
 @cross_origin()
 def info_page():
@@ -75,6 +76,8 @@ def require_valid_session(func):
         return func(dbUser, *args, **kwargs)
 
     return check_token
+
+
 
 
 
@@ -177,6 +180,26 @@ def logout(dbUser):
         "status": "success",
     })
 
+
+@app.route('/api/user/<userID>', methods=['get'])
+def get_user(userID):
+    response = usersTable.get_item(
+        Key={
+            'userID': userID,
+        }
+    )
+
+    if "Item" not in response:
+        return jsonify({
+            "status": "fail",
+            "reason": "unknown"
+        })
+        
+    item = response["Item"]
+    print(item)
+    del item["password"]
+
+    return item
 
 @app.route('/api/login/', methods=['post'])
 @cross_origin()
