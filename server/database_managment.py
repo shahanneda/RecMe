@@ -46,7 +46,7 @@ def add_object_to_user_list(usersTable, listName, userID, obj):
     
 
 
-def get_list_on_user(userTable, listName, userID):
+def get_list_on_user(usersTable, listName, userID):
     """gets a list with listName on user with userID
 
     Args:
