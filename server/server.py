@@ -181,6 +181,10 @@ def logout(dbUser):
     })
 
 
+
+
+
+
 @app.route('/api/user/<userID>', methods=['get'])
 def get_user(userID):
     response = usersTable.get_item(

@@ -47,3 +47,34 @@ def add_object_to_user_list(userTable, listName, userID, obj):
     
 
 
+def get_list_on_user(userTable, listName, userID):
+    """gets a list with listName on user with userID
+
+    Args:
+        userTable (aws boto3 table): table
+        listName (str): the name of the list
+        userID (str): userID
+
+    Returns:
+        status obj:  object with status, and value if "status" != fail
+    """
+    response = usersTable.get_item(
+        Key={
+            'userID': userID,
+        }
+    )
+
+    if "Item" not in response:
+        return { 
+            "status": "fail",
+            "reason": "unknown"
+        }
+
+    user = response["Item"]
+
+    if listName in user:
+        user[listName] = {}
+    return {"status": "success", "value": user[listName]}
+
+
+
