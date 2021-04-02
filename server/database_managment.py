@@ -1,14 +1,13 @@
 
-def add_object_to_user_list(userTable, listName, userID, obj):
+def add_object_to_user_list(usersTable, listName, userID, obj):
     """general purpose utility function that adds an object to a listName on user with userID.
     if a list with listName does not existon user, will create it
 
-    :return: 
     Args:
         userTables (boto3 table): table
         listName (str): list name in database
         userID (str): user database id
-        obj (object): object that must have id
+        obj (dictionary): dictionary that must have id field
 
     Returns:
         status object: will return an object with parameter "status" to "fail" intended to be returned to the user
@@ -28,16 +27,16 @@ def add_object_to_user_list(userTable, listName, userID, obj):
 
     user = response["Item"]
 
-    if listName in user:
+    if listName not in user:
         user[listName] = {}
 
-    user[listName][obj.id] = obj
+    user[listName][obj["id"]] = obj
 
     usersTable.update_item(
         Key={
             'userID': user['userID'],
         },
-        UpdateExpression='SET ' + listName + " = :val1',
+        UpdateExpression='SET ' + listName + ' = :val1',
         ExpressionAttributeValues={
             ':val1': user[listName]
         }
@@ -56,7 +55,7 @@ def get_list_on_user(userTable, listName, userID):
         userID (str): userID
 
     Returns:
-        status obj:  object with status, and value if "status" != fail
+        status dict:  dict with status, and value if "status" != fail
     """
     response = usersTable.get_item(
         Key={
@@ -72,7 +71,7 @@ def get_list_on_user(userTable, listName, userID):
 
     user = response["Item"]
 
-    if listName in user:
+    if listName not in user:
         user[listName] = {}
     return {"status": "success", "value": user[listName]}
 
