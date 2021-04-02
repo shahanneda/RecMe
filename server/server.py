@@ -13,6 +13,7 @@ from decimal import Decimal
 from functools import wraps
 from database_managment import *
 
+PUBLICLY_ADDED_USER_MOVIES_LIST_NAME = "paml" # publically added movie list
 
 app = Flask(__name__)
 bcrypt = Bcrypt(app)
@@ -193,6 +194,11 @@ def add_movie_to_user(dbUser, userID):
     request body must have:
         userID: user id of user adding to ist
         editedUserID: user id of person who is being added to 
+        dateAdded: date when movie is added to list in milliseconds
+        order: display order
+
+
+
         movieID: imdb id of movie
         name: name of movie
         year: year of movie
@@ -201,20 +207,23 @@ def add_movie_to_user(dbUser, userID):
 
     body = request.get_json(force=True)
 
-    if not all(param in body for param in ("userID", "editedUserID", "movieID", "name", "year", "image")):
+    if not all(param in body for param in ("userID", "editedUserID", "movieID", "name", "year", "image", "dateAdded", "order")):
         return jsonify({
             "status": "fail",
             "reason": "incomplete"
         })
 
-    movie = vars(Movie(body["movieID"], body["name"], body["year"], body["image"], body["userID"]))
+    movie = vars(Movie(body["movieID"], body["name"], body["year"], body["image"], body["userID"], body["dateAdded"], body["order"]))
 
-    status = add_object_to_user_list(usersTable, "public_add_movie_list",body["editedUserID"], movie)
+    status = add_object_to_user_list(usersTable, PUBLICLY_ADDED_USER_MOVIES_LIST_NAME,body["editedUserID"], movie)
     return status
 
     
 
-# @app.route('/api/user/<userID>/get_movies', method=['get'])
+@app.route('/api/user/<userID>/get_movies', methods=['get'])
+def get_movies_for_user(userID):
+    status = get_list_on_user(usersTable, PUBLICLY_ADDED_USER_MOVIES_LIST_NAME, userID)
+    return status
 
 
 @app.route('/api/user/<userID>', methods=['get'])
