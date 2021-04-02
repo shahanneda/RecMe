@@ -8,8 +8,10 @@ from boto3.dynamodb.conditions import Key, Attr
 import uuid
 import time
 import os
+from movie import Movie
 from decimal import Decimal
 from functools import wraps
+from database_managment import *
 
 
 app = Flask(__name__)
@@ -183,6 +185,36 @@ def logout(dbUser):
 
 
 
+@app.route('/api/user/<userID>/add_movie/', methods=['post'])
+@require_valid_session
+def add_movie_to_user(dbUser, userID):
+    """
+    POST: for adding a new movie to a user list
+    request body must have:
+        userID: user id of user adding to ist
+        editedUserID: user id of person who is being added to 
+        movieID: imdb id of movie
+        name: name of movie
+        year: year of movie
+        image: image url of movie
+    """
+
+    body = request.get_json(force=True)
+
+    if not all(param in body for param in ("userID", "editedUserID", "movieID", "name", "year", "image")):
+        return jsonify({
+            "status": "fail",
+            "reason": "incomplete"
+        })
+
+    movie = vars(Movie(body["movieID"], body["name"], body["year"], body["image"], body["userID"]))
+
+    status = add_object_to_user_list(usersTable, "public_add_movie_list",body["editedUserID"], movie)
+    return status
+
+    
+
+# @app.route('/api/user/<userID>/get_movies', method=['get'])
 
 
 @app.route('/api/user/<userID>', methods=['get'])
