@@ -13,6 +13,7 @@ import { Redirect } from 'react-router';
 
 // @ts-ignore
 import cookie from 'cross-cookie';
+import UserDisplay from './UserDisplay';
 
 const styles = StyleSheet.create({
 
@@ -71,6 +72,7 @@ const App: React.FC = () => {
               <Route  path="/home">
                 <HomePage setLoginInfo={setLoginInfoAndCookie} loginInfo={loginInfo} />
               </Route>
+              <Route  path="/user/:id" component={UserDisplay} />
 
               <Route path="/">
                 <Redirect to="/home" />
