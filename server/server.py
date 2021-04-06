@@ -13,6 +13,8 @@ from decimal import Decimal
 from functools import wraps
 from database_managment import *
 
+
+import simplejson as json
 PUBLICLY_ADDED_USER_MOVIES_LIST_NAME = "paml" # publically added movie list
 
 app = Flask(__name__)
@@ -220,13 +222,17 @@ def add_movie_to_user(dbUser, userID):
 
     
 
-@app.route('/api/user/<userID>/get_movies', methods=['get'])
+@app.route('/api/user/<userID>/get_movies/', methods=['get'])
+@cross_origin()
 def get_movies_for_user(userID):
     status = get_list_on_user(usersTable, PUBLICLY_ADDED_USER_MOVIES_LIST_NAME, userID)
-    return status
+    # return status
+    print(status)
+    return json.dumps(status)
 
 
-@app.route('/api/user/<userID>', methods=['get'])
+@app.route('/api/user/<userID>/', methods=['get'])
+@cross_origin()
 def get_user(userID):
     response = usersTable.get_item(
         Key={
