@@ -22,10 +22,6 @@ const HomePage = (props: HomeProps) => {
     return (
         <View>
 
-            <MainHeader setLoginInfo={props.setLoginInfo} loginInfo={props.loginInfo} />
-
-
-
             <Route path="/home/ls/">
                 <Login onClose={() => { history.push("/home")}} setLoginInfo={props.setLoginInfo} /> 
             </Route>

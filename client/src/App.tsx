@@ -14,6 +14,7 @@ import { Redirect } from 'react-router';
 // @ts-ignore
 import cookie from 'cross-cookie';
 import UserDisplay from './UserDisplay';
+import MainHeader from './MainHeader';
 
 const styles = StyleSheet.create({
 
@@ -69,12 +70,15 @@ const App: React.FC = () => {
           <Link to="/login">Login</Link>
         </View> */}
 
+              <MainHeader setLoginInfo={setLoginInfo} loginInfo={loginInfo} />
+
+              <Route  path="/user/:id" component={UserDisplay} />
+
               <Route  path="/home">
                 <HomePage setLoginInfo={setLoginInfoAndCookie} loginInfo={loginInfo} />
               </Route>
-              <Route  path="/user/:id" component={UserDisplay} />
 
-              <Route path="/">
+              <Route exact path="/">
                 <Redirect to="/home" />
               </Route>
 

@@ -5,7 +5,7 @@ export const RColors = {
     accent: "#FF101F",
     accent2:"#FF9F1C",
     background:"#fff",
-    background2:"#fff9",
+    background2:"#fff4",
     text:"#fff",
 
 };
