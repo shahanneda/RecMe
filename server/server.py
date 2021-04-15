@@ -227,7 +227,6 @@ def add_movie_to_user(dbUser, userID):
 def get_movies_for_user(userID):
     status = get_list_on_user(usersTable, PUBLICLY_ADDED_USER_MOVIES_LIST_NAME, userID)
     # return status
-    print(status)
     return json.dumps(status)
 
 
@@ -250,7 +249,7 @@ def get_user(userID):
     print(item)
     del item["password"]
 
-    return item
+    return json.dumps(item)
 
 @app.route('/api/login/', methods=['post'])
 @cross_origin()

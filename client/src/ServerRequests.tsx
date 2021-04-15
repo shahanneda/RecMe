@@ -100,3 +100,19 @@ const saveServerResponseToLoginInfo = (res: any, props:ServerLoginProps ) => {
 
 }
 
+interface UserInfo{
+    displayName: String,
+    email: String,
+    userID: String,
+
+
+}
+// const getUserFromServer = ():Promise => {
+//     fetch(serverInfo.apiURL + "/api/user/mary6/get_movies/")
+//         .then(res => res.json())
+//         .then(res => {
+//             console.log(res)
+//             setCurrentUser(res);
+//         });
+// }
+
